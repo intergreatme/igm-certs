@@ -60,7 +60,7 @@ $ go run .
 
 ? Enter a password to protect the private key: ********
 ? Confirm your password: ********
-? Common Name (e.g., your domain name): intergreatme
+? Common Name (e.g., your domain name): intergreatme.com
 ? Organization (e.g., company name): Intergreatme
 ? Country (2-letter code): ZA
 ? Validity Period (years): 10
