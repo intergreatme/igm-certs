@@ -24,7 +24,7 @@ This interactive command-line application allows you to generate x.509 certifica
 
 2. **Install Dependencies**:
     ```sh
-    go get github.com/manifoldco/promptui
+    go mod tidy
     ```
 
 3. **Build the Application**:
@@ -39,6 +39,7 @@ This interactive command-line application allows you to generate x.509 certifica
 4. **Options**
  - Generate a x.509 Certificate:
     - Prompts you to enter a password to protect the private key.
+    - Therafter it prompts you to enter your domain name, organization, country and validity years of certificate  
     - Generates the private key and a self-signed certificate.
     - Saves the encrypted private key and certificate in the keys directory.
  
@@ -59,6 +60,10 @@ $ go run .
 
 ? Enter a password to protect the private key: ********
 ? Confirm your password: ********
+? Common Name (e.g., your domain name): intergreatme
+? Organization (e.g., company name): Intergreatme
+? Country (2-letter code): ZA
+? Validity Period (years): 10
 Generating certificate, please wait...
 Generated successfully, your certificates can be found under /path/to/your/directory/keys
 ```
