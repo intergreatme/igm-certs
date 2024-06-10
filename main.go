@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 
-	"intergreatme.com/igm-certs/certificate"
-	"intergreatme.com/igm-certs/test"
-
+	"github.com/intergreatme/igm-certs/certificate"
+	"github.com/intergreatme/igm-certs/test"
 	"github.com/manifoldco/promptui"
 )
 

@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"intergreatme.com/igm-certs/file"
+	"github.com/intergreatme/igm-certs/file"
 )
 
 // TestExistingCertificates tests the existing certificates in the keys directory.

@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"intergreatme.com/igm-certs/file"
+	"github.com/intergreatme/igm-certs/file"
 )
 
 // HandleX509Generation handles the entire process of generating an x509 certificate.
