@@ -9,6 +9,7 @@ This interactive command-line application allows you to generate x.509 certifica
 - **Interactive Menu**: Generate certificates and test existing certificates interactively.
 - **Password Protection**: Encrypts private keys with a password for added security.
 - **Directory Setup**: Automatically sets up directories to store keys and certificates.
+- **Customizable Key Size**: Option to specify the size of the RSA key (default is 4096 bits).
 
 ## Prerequisites
 
@@ -42,6 +43,12 @@ This interactive command-line application allows you to generate x.509 certifica
     - Therafter it prompts you to enter your domain name, organization, country and validity years of certificate  
     - Generates the private key and a self-signed certificate.
     - Saves the encrypted private key and certificate in the keys directory.
+    - By default, generates a 4096-bit RSA key. To specify a different key size, run the application with the --bits flag:
+    ```sh
+    go run . --bits=2048
+    ```
+    This will generate a 2048-bit RSA key instead of the default 4096-bit key.
+
  
  - Test Existing Certificates:
     - Tests the existence of cert.pem and key.pem in the keys directory.

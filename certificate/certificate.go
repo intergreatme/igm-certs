@@ -31,7 +31,7 @@ type CertificateDetails struct {
 }
 
 // HandleX509Generation handles the entire process of generating an x509 certificate.
-func HandleX509Generation() error {
+func HandleX509Generation(bits int) error {
 	// Set up the directory to store the keys
 	keysPath, err := file.SetupKeysDirectory()
 	if err != nil {
@@ -84,7 +84,7 @@ func HandleX509Generation() error {
 
 	// Generate the x509 certificate and store it in the keys directory
 	fmt.Println("Generating certificate, please wait...")
-	err = GenerateCertificate(keysPath, password, details)
+	err = GenerateCertificate(keysPath, password, details, bits)
 	if err != nil {
 		return fmt.Errorf("failed to generate certificate: %v", err)
 	}
@@ -114,9 +114,15 @@ func validateCountryCode(input string) error {
 }
 
 // GenerateCertificate generates an x509 certificate and stores it in the specified output path.
-func GenerateCertificate(outputPath, password string, details CertificateDetails) error {
+func GenerateCertificate(outputPath, password string, details CertificateDetails, bits int) error {
+	if bits == 4096 {
+		fmt.Println("Using default RSA key size of 4096 bits. To change this, run the app with --bits=<size>")
+	} else {
+		fmt.Printf("Using custom RSA key size of %d bits.\n", bits)
+	}
+
 	// Generate a new RSA private key
-	priv, err := rsa.GenerateKey(rand.Reader, 4096)
+	priv, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
 		return err
 	}

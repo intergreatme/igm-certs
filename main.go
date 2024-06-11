@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/intergreatme/igm-certs/certificate"
@@ -9,6 +10,10 @@ import (
 )
 
 func main() {
+	// Define a flag for the RSA key size
+	bitsFlag := flag.Int("bits", 4096, "Size of the RSA key in bits")
+	flag.Parse()
+
 	// Display a selection prompt to the user for generating a certificate or quitting
 	prompt := promptui.Select{
 		Label: "Select an action",
@@ -25,7 +30,7 @@ func main() {
 	switch result {
 	case "Generate a x509 Certificate":
 		// Handle the x509 certificate generation process
-		err := certificate.HandleX509Generation()
+		err := certificate.HandleX509Generation(*bitsFlag)
 		if err != nil {
 			fmt.Printf("Operation failed: %v\n", err)
 		}
