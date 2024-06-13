@@ -3,12 +3,12 @@ package test
 import (
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/intergreatme/certcrypto"
 	"github.com/intergreatme/igm-certs/file"
 )
 
-// TestExistingCertificates tests the existing certificates in the keys directory.
+// TestExistingCertificates checks if the certificate and key files exist and are correctly formatted.
 func TestExistingCertificates() error {
 	// Set up test directory
 	outputPath, err := file.SetupKeysDirectory()
@@ -18,21 +18,24 @@ func TestExistingCertificates() error {
 	}
 	log.Printf("Keys directory set up at %s", outputPath)
 
-	// Verify certificate file exists
+	// Verify certificate file exists and is correctly formatted
 	certPath := outputPath + "/cert.pem"
-	if _, err := os.Stat(certPath); os.IsNotExist(err) {
-		log.Printf("Certificate file does not exist: %s", certPath)
-		return fmt.Errorf("certificate file does not exist: %s", certPath)
+	_, err = certcrypto.ReadCertFromPEM(certPath)
+	if err != nil {
+		log.Printf("Failed to read certificate file: %v", err)
+		return fmt.Errorf("failed to read certificate file: %v", err)
 	}
-	log.Printf("Certificate file exists: %s", certPath)
+	log.Printf("Certificate file exists and is valid: %s", certPath)
 
-	// Verify key file exists
-	keyPath := outputPath + "/key.pem"
-	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
-		log.Printf("Key file does not exist: %s", keyPath)
-		return fmt.Errorf("key file does not exist: %s", keyPath)
+	// Verify key file exists and is correctly formatted
+	pfxPath := outputPath + "/cert.pfx"
+	password := "yourpassword"
+	_, _, err = certcrypto.ReadPKCS12(pfxPath, password)
+	if err != nil {
+		log.Printf("Failed to read key file from PFX: %v", err)
+		return fmt.Errorf("failed to read key file from PFX: %v", err)
 	}
-	log.Printf("Key file exists: %s", keyPath)
+	log.Printf("Key file exists and is valid: %s", pfxPath)
 
 	return nil
 }

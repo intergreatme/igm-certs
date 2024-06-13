@@ -1,15 +1,11 @@
 package certificate
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"fmt"
-	"io"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -152,94 +148,45 @@ func GenerateCertificate(outputPath, password string, details CertificateDetails
 		BasicConstraintsValid: true,
 	}
 
-	// Create the certificate
+	// Create the selfsigned certificate | This is an essential step because it transforms the certificate template into an actual valid certificate.
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	if err != nil {
 		return err
 	}
 
-	// Optional: Write the certificate to a PEM file
-	// Comment out these lines if not needed
-	/*
-		certPath := filepath.Join(outputPath, "cert.pem")
-		if err := file.WritePemFile(certPath, "CERTIFICATE", derBytes); err != nil {
-			return err
-		}
-	*/
-
-	// Marshal the private key to PKCS1 format
-	privBytes := x509.MarshalPKCS1PrivateKey(priv)
-
-	// Encrypt the private key
-	encPrivKey, err := encryptPrivateKey(privBytes, password)
+	// Parse the DER-encoded bytes to get an x509.Certificate
+	cert, err := x509.ParseCertificate(derBytes)
 	if err != nil {
 		return err
 	}
 
-	// Write the encrypted private key to a PEM file
-	keyPath := filepath.Join(outputPath, "key.pem")
-	if err := file.WritePemFile(keyPath, "ENCRYPTED PRIVATE KEY", encPrivKey); err != nil {
+	// Write the certificate to a PEM file
+	certPath := filepath.Join(outputPath, "cert.pem")
+	if err := file.WriteCertToPEM(cert, certPath); err != nil {
 		return err
 	}
 
 	// Export cert to PFX
 	pfxPath := filepath.Join(outputPath, "cert.pfx")
-	if err := exportToPFX(pfxPath, priv, derBytes, password); err != nil {
+	if err := ExportCertToPFX(pfxPath, priv, cert, password); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// encryptPrivateKey encrypts the private key using AES-GCM with the provided password.
-func encryptPrivateKey(privateKey []byte, password string) ([]byte, error) {
-	// Derive a key from the password using SHA-256.
-	// The derived key is 32 bytes long, suitable for AES-256 encryption.
-	hash := sha256.Sum256([]byte(password))
-
-	// Create a new AES cipher block from the derived key.
-	block, err := aes.NewCipher(hash[:])
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new GCM (Galois/Counter Mode) AEAD (Authenticated Encryption with Associated Data) cipher.
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, err
-	}
-
-	// Generate a random nonce for GCM. The nonce size is specific to the GCM instance.
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, err
-	}
-
-	// Encrypt the private key using AES-GCM. The nonce is used as the initialization vector.
-	// The resulting ciphertext includes the nonce followed by the encrypted private key.
-	ciphertext := gcm.Seal(nonce, nonce, privateKey, nil)
-
-	// Return the resulting ciphertext.
-	return ciphertext, nil
-}
-
-// exportToPFX exports the certificate and private key to a PFX file.
-func exportToPFX(pfxPath string, priv *rsa.PrivateKey, derBytes []byte, password string) error {
-	// Parse the DER-encoded certificate
-	cert, err := x509.ParseCertificate(derBytes)
-	if err != nil {
-		return err
-	}
-
+// ExportCertToPFX exports the certificate and private key to a PFX file.
+func ExportCertToPFX(pfxPath string, priv *rsa.PrivateKey, cert *x509.Certificate, password string) error {
 	// Encode the certificate and private key into a PFX file
-	// Encode to PKCS12 using Legacy.Encode
 	pfxData, err := pkcs12.Modern2023.Encode(priv, cert, nil, password)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to encode PFX: %v", err)
 	}
+
 	// Write the PFX data to a file
-	if err := os.WriteFile(pfxPath, pfxData, 0644); err != nil {
-		return err
+	err = os.WriteFile(pfxPath, pfxData, 0644)
+	if err != nil {
+		return fmt.Errorf("unable to write PFX to file: %v", err)
 	}
 
 	return nil

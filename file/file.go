@@ -1,6 +1,7 @@
 package file
 
 import (
+	"crypto/x509"
 	"encoding/pem"
 	"fmt"
 	"os"
@@ -27,21 +28,18 @@ func SetupKeysDirectory() (string, error) {
 	return keysPath, nil
 }
 
-// WritePemFile writes the provided bytes to a PEM file with the specified type.
-func WritePemFile(path, pemType string, bytes []byte) error {
-	file, err := os.Create(path)
+// WriteCertToPEM writes an x509 certificate to a PEM-encoded file.
+func WriteCertToPEM(cert *x509.Certificate, filepath string) error {
+	// Encode the certificate into a PEM block
+	certPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: cert.Raw,
+	})
+
+	// Write the PEM block to the specified file
+	err := os.WriteFile(filepath, certPEM, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to create file: %w", err)
-	}
-	defer file.Close()
-
-	block := &pem.Block{
-		Type:  pemType,
-		Bytes: bytes,
-	}
-
-	if err := pem.Encode(file, block); err != nil {
-		return fmt.Errorf("failed to write PEM file: %w", err)
+		return fmt.Errorf("unable to write certificate to file: %v", err)
 	}
 
 	return nil

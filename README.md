@@ -1,5 +1,3 @@
----
-
 # Certificate Generation CLI Application
 
 This interactive command-line application allows you to generate x.509 certificates interactively. It includes functionality to create private keys and self-signed certificates, which can be used for secure communications.
@@ -28,36 +26,61 @@ This interactive command-line application allows you to generate x.509 certifica
     go mod tidy
     ```
 
+## Installation
+
+1. **Clone the Repository**:
+    ```sh
+    git clone https://github.com/intergreatme/igm-certs
+    cd igm-certs
+    ```
+
+2. **Install Dependencies**:
+    ```sh
+    go mod tidy
+    ```
+
 3. **Build the Application**:
     ```sh
     go build -o igm-certs main.go
+    ```
+
+4. **Run the Application**:
+    ```sh
+    ./igm-certs
     ```
     OR 
      ```sh
     go run .
     ```
 
-4. **Options**
- - Generate a x.509 Certificate:
-    - Prompts you to enter a password to protect the private key.
-    - Therafter it prompts you to enter your domain name, organization, country and validity years of certificate  
-    - Generates the private key and a self-signed certificate.
-    - Saves the encrypted private key and certificate in the keys directory.
-    - By default, generates a 4096-bit RSA key. To specify a different key size, run the application with the --bits flag:
+## Usage
+
+### Generate a x.509 Certificate
+
+- Prompts you to enter a password to protect the private key.
+- Thereafter it prompts you to enter your domain name, organization, country, and validity years of the certificate.
+- Generates the private key and a self-signed certificate.
+- Saves the encrypted private key and certificate in the keys directory.
+- By default, generates a 4096-bit RSA key. To specify a different key size, run the application with the --bits flag:
     ```sh
     go run . --bits=2048
     ```
     This will generate a 2048-bit RSA key instead of the default 4096-bit key.
 
- 
- - Test Existing Certificates:
-    - Tests the existence of cert.pem and key.pem in the keys directory.
-    - Verifies the integrity and validity of the existing certificate and key.
+### Test Existing Certificates
 
- - Quit:
-    - Exits the application.
+- Tests the existence of `cert.pem` and `cert.pfx` in the keys directory.
+- Verifies the integrity and validity of the existing certificate and key.
+- Note: You will need to manually input the password for `cert.pfx`.
+
+### Quit
+
+- Exits the application.
+
 
 5. **Example run**
+## Example Run
+
 ```bash
 $ go run .
 ? Select an action: 
@@ -78,5 +101,3 @@ Generated successfully, your certificates can be found under /path/to/your/direc
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
