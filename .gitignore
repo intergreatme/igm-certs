@@ -3,7 +3,3 @@ igm-certs
 
 # Keys directory
 /keys/
-
-# Go modules
-/go.mod
-/go.sum

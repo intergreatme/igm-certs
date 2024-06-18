@@ -146,6 +146,7 @@ func GenerateCertificate(outputPath, password string, details CertificateDetails
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
+		SignatureAlgorithm:    x509.SHA512WithRSA,
 	}
 
 	// Create the selfsigned certificate | This is an essential step because it transforms the certificate template into an actual valid certificate.
