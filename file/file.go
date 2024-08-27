@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2024 Intergreatme. All rights reserved.
+ */
 package file
 
 import (
